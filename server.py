@@ -12,13 +12,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     self.end_headers()
   
   def do_GET(self):
-    self.do_HEAD()
     self.path = os.getcwd() + '/index.html'
-    F = open(self.path)
-    content = F.read()
-    F.close()
-    self.wfile.write(content)
-
+    try:
+      with open(self.path) as f:
+        content = f.read()
+        self.do_HEAD()
+        self.wfile.write(content)
+    except IOError:
+      print 'Not found!!!'
+      self.send_error(404)    
 
 if __name__ == '__main__':
   server_class = BaseHTTPServer.HTTPServer
