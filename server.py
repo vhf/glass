@@ -5,22 +5,30 @@ import time
 HOST_NAME = 'localhost'
 PORT_NUM = 4242
 
+
+def hello_world():
+  return 'hello world'
+
+def bar():
+  return 'bar'
+
+
+routes = {
+  '/': hello_world,
+  '/index': hello_world,
+  '/bar': bar
+}
+
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
   def do_HEAD(self):
     self.send_response(200)
     self.send_header('Content-type', 'text/html')
     self.end_headers()
-  
+
   def do_GET(self):
-    self.path = os.getcwd() + '/index.html'
-    try:
-      with open(self.path) as f:
-        content = f.read()
-        self.do_HEAD()
-        self.wfile.write(content)
-    except IOError:
-      print 'Not found!!!'
-      self.send_error(404)    
+    self.file_path = os.getcwd() + '/index.html'
+    self.do_HEAD()
+    self.wfile.write(routes[self.path]())
 
 if __name__ == '__main__':
   server_class = BaseHTTPServer.HTTPServer
