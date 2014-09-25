@@ -11,8 +11,8 @@ HOST_NAME = 'localhost'
 PORT_NUM = 4242
 
 ROUTES = {
-  '\Ahello/(\w+)\Z': ('routes', hello),
-  '\A\Z': ('routes', hello_world)
+  '\Ahello/(\w+)\Z': hello,
+  '\A\Z': hello_world
 
 }
 
@@ -36,7 +36,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     routing_info = self.router.route(self.path)
     if routing_info:
       func_info, regex_match = routing_info
-      module_name, func = func_info
+      func = func_info
       content = func(regex_match)
 
       self.do_HEAD()
