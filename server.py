@@ -4,17 +4,11 @@ import time
 import argparse
 import re
 import cgi
-from routes import hello, hello_world
-
+from router import Router, ROUTES
+import routes
 
 HOST_NAME = 'localhost'
 PORT_NUM = 4242
-
-ROUTES = {
-  '\Ahello/(\w+)\Z': hello,
-  '\A\Z': hello_world
-
-}
 
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -47,7 +41,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
   def do_POST(self):
     form = cgi.FieldStorage(
-            fp=self.rfile, 
+            fp=self.rfile,
             headers=self.headers,
             environ={'REQUEST_METHOD':'POST',
                      'CONTENT_TYPE':self.headers['Content-Type'],
@@ -75,25 +69,6 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             # Regular form value
             self.wfile.write('\t%s=%s\n' % (field, form[field].value))
     return
-
-
-
-
-
-class Router(object):
-  def __init__(self, server):
-    self.routes = {}
-    self.server = server
-
-  def add(self, route, value):
-    self.routes[route] = value
-
-  def route(self, route):
-    for pattern in self.routes:
-      match = re.match(pattern, route)
-      if match:
-        return self.routes[pattern], match
-
 
 if __name__ == '__main__':
   server_class = BaseHTTPServer.HTTPServer
