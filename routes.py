@@ -2,10 +2,10 @@ from router import route
 
 
 @route('\A\Z')
-def hello_world(args):
+def hello_world():
     return 'hello world'
 
 
-@route('\Ahello/(\w+)\Z')
-def hello(to):
-    return 'hello {}'.format(to.group(1))
+@route('\Ahello/(?P<name>\w+)\Z')
+def hello(name):
+    return 'hello {}'.format(name)

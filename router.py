@@ -15,7 +15,7 @@ class Router(object):
         for pattern in self.routes:
             match = re.match(pattern, route)
             if match:
-                return self.routes[pattern], match
+                return self.routes[pattern], match.groupdict()
 
 
 def route(route):

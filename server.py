@@ -30,21 +30,21 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         routing_info = self.router.route(self.path)
         if routing_info:
             func, regex_match = routing_info
-            content = func(regex_match)
+            content = func(**regex_match)
 
             self.do_HEAD()
             self.wfile.write(content)
-            return
 
-        self.send_error(404)
+        else:
+            self.send_error(404)
 
     def do_POST(self):
         form = cgi.FieldStorage(
-                        fp=self.rfile,
-                        headers=self.headers,
-                        environ={'REQUEST_METHOD':'POST',
-                                         'CONTENT_TYPE':self.headers['Content-Type'],
-                                         })
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
 
         # Begin the response
         self.send_response(200)
@@ -56,17 +56,17 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         # Echo back information about what was posted in the form
         for field in form.keys():
-                field_item = form[field]
-                if field_item.filename:
-                        # The field contains an uploaded file
-                        file_data = field_item.file.read()
-                        file_len = len(file_data)
-                        del file_data
-                        self.wfile.write('\tUploaded %s as "%s" (%d bytes)\n' % \
-                                        (field, field_item.filename, file_len))
-                else:
-                        # Regular form value
-                        self.wfile.write('\t%s=%s\n' % (field, form[field].value))
+            field_item = form[field]
+            if field_item.filename:
+                # The field contains an uploaded file
+                file_data = field_item.file.read()
+                file_len = len(file_data)
+                del file_data
+                self.wfile.write('\tUploaded %s as "%s" (%d bytes)\n' % \
+                                (field, field_item.filename, file_len))
+            else:
+                # Regular form value
+                self.wfile.write('\t%s=%s\n' % (field, form[field].value))
         return
 
 if __name__ == '__main__':
